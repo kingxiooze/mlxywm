@@ -1,0 +1,197 @@
+<!-- <script src="js/jquery-3.5.1.min.js"></script>
+<script>
+	window.onload = function() {
+		//方法内容
+		var order_no = getQueryString('order_no');
+		console.log('order_no', order_no)
+		var token = localStorage.getItem("token");
+		var baseUrls=localStorage.getItem("baseUrls");
+		var type = getQueryString('type');
+		console.log("type", type)
+		// type为1是支付宝 // 2是微信
+		var url = `${baseUrls}/api/lian/pay`
+		console.log(url);
+		debugger;
+		// var url = `${baseUrls}/api/pay/${type == 1?'toPay':'wx_h5 '}`
+		$.ajax({
+			/* 发送的请求类型 */
+			type: "post",
+			/* 发送的请求地址 */
+			url: url,
+			data: {
+				order_no: order_no
+			},
+			/* 传输的数据 */
+			headers: {
+				Authorization: token
+			},
+			
+			success: function(params) {
+				
+				console.log("params", params)
+				// console.log(params)
+				//$("#content").html(params.content)
+				// var url = params.data.content.split("<a href=\"")[1].split("\">")[0];
+				window.location.href = url;
+				// document.write(params.data.content);
+				// alert(JSON.stringify(params))
+				window.parent.postMessage(params, "*")
+				
+				// $("a")[0].click();
+				// "<!DOCTYPE html>
+				// <html>
+				//     <head>
+				//         <meta charset="UTF-8" />
+				//         <meta http-equiv="refresh" content="0;url='https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx12184926501179f036b9b05895ddc10000&amp;package=1708492229'" />
+
+				//         <title>Redirecting to https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx12184926501179f036b9b05895ddc10000&amp;package=1708492229</title>
+				//     </head>
+				//     <body>
+				//         Redirecting to <a href="https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx12184926501179f036b9b05895ddc10000&amp;package=1708492229">https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx12184926501179f036b9b05895ddc10000&amp;package=1708492229</a>.
+				//     </body>
+				// </html>"
+			},
+			error: function(xhr) {
+				console.log("Error:");
+				console.log(xhr);
+			}
+		});
+	}
+	function getQueryString(variable) {
+		let href = window.location.href
+		console.log('href',href)
+		let query = href.substring(href.indexOf('?') + 1);
+		let vars = query.split("&");
+		for (var i = 0; i < vars.length; i++) {
+			let pair = vars[i].split("=");
+			if (pair[0] == variable) {
+				return pair[1];
+			}
+		}
+		return (false);
+	}
+</script>
+ -->
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Document</title>
+	</head>
+	<body>
+		<form name="myform" action="" method="post" id="myform" />
+	</body>
+</html>
+
+<script src="js/jquery-3.5.1.min.js"></script>
+<script>
+	window.onload = function() {
+		//方法内容
+		var url = getQueryString('url');
+		console.log('url', url)
+		 
+		// type为0是微信 // 1是支付宝
+		// var url = `${baseUrls}/api/pay/${type == 1?'toPay':'wx_h5 '}`
+		// $("#myform").attr("action", url)
+		 
+		window.location.href = url;
+		return
+		if (type == 0) {
+			url = `${baseUrls}/api/pay/wx_h5`
+		} else if (type == 1) {
+			url = `${baseUrls}/api/mzzy/pay`
+		} else if (type == 4) {
+			url = `${baseUrls}/api/lian/pay`
+			// url=`https://www.cjwj.art/api/pay/sdNewQuick`
+		} else if (type == 3) {
+			url=`${baseUrls}/api/pay/sdNewQuick`
+		} else if (type == 6) {
+			url = `http://www.sgshucang.com/api/lian/account`
+		}
+		$.ajax({
+			/* 发送的请求类型 */
+			type: "post",
+			/* 发送的请求地址 */
+			url: url,
+			data: {
+				order_no: order_no
+			},
+			/* 传输的数据 */
+			headers: {
+				Authorization: token
+			},
+			success: function(params) {
+				console.log("params", JSON.stringify(params))
+				// alert('sss')
+				console.log(params)
+				//$("#content").html(params.content)
+				// var url = params.data.content.split("<a href=\"")[1].split("\">")[0];
+				
+				if (type == 4) {
+					// window.location.href = params.data.url;
+					// window.location.href = params.data.url;
+					// document.write(params.data.url);
+					var urlMain = params.data.url
+					$("#myform").attr("action", urlMain)
+					document.myform.submit();
+				} else if (type == 3) {
+					// console.log(params.data,'123123214')
+					window.location.href = params.data.url;
+				} else if (type == 1) {
+					// console.log(params.data,'123123214')
+					// debugger;
+					window.location.href = params.data.url;
+				} else if (type == 6) {
+					// window.location.href = params.data.url;
+					// window.location.href = params.data.url;
+					// document.write(params.data.url);
+					var urlMain = params.data.url
+					
+					document.myform.submit();
+
+				} else {
+					document.write(params.data.content);
+				}
+
+				// alert(JSON.stringify(params))
+				window.parent.postMessage(params, "*")
+
+				// $("a")[0].click();
+				// "<!DOCTYPE html>
+				// <html>
+				//     <head>
+				//         <meta charset="UTF-8" />
+				//         <meta http-equiv="refresh" content="0;url='https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx12184926501179f036b9b05895ddc10000&amp;package=1708492229'" />
+
+				//         <title>Redirecting to https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx12184926501179f036b9b05895ddc10000&amp;package=1708492229</title>
+				//     </head>
+				//     <body>
+				//         Redirecting to <a href="https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx12184926501179f036b9b05895ddc10000&amp;package=1708492229">https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx12184926501179f036b9b05895ddc10000&amp;package=1708492229</a>.
+				//     </body>
+				// </html>"
+			},
+			error: function(xhr) {
+				console.log("Error:");
+				console.log(xhr);
+			}
+		});
+	}
+
+	function getQueryString(variable) {
+		let href = window.location.href
+		console.log('href', href)
+
+		let query = href.substring(href.indexOf('?') + 1);
+		console.log('query', query)
+		let vars = query.split("&");
+		for (var i = 0; i < vars.length; i++) {
+			let pair = vars[i].split("=");
+			if (pair[0] == variable) {
+				return pair[1];
+			}
+		}
+		return (false);
+	}
+</script>

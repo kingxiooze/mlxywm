@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+</head>
+<body>
+    <img id="captcha">
+    <form method="get" action="/captcha-test">
+        <input type="hidden" name="key" id="key">
+        <input type="text" name="captcha">
+        <input type="submit">
+    </form>
+    <script>
+        fetch('/captcha/api/default')
+            .then(response => response.json())
+            .then(function (data){
+                console.log(data);
+                let img = document.getElementById("captcha");
+                img.src = data.img;
+                let key = document.getElementById("key");
+                key.value = data.key;
+            });
+    </script>
+</body>
+</html>
