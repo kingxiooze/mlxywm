@@ -17,7 +17,8 @@ class TaskModel extends Model
         "cmtype",
         "commission",
         "task_index_id",
-        "item_price"
+        "item_price",
+        "item_id"
     ];
 
     
@@ -25,5 +26,10 @@ class TaskModel extends Model
 public function taskIndex()
 {
     return $this->belongsTo(TaskIndex::class);
+}
+
+public function itemIdinfo()
+{
+    return $this->belongsTo(Item::class,"item_id");
 }
 }

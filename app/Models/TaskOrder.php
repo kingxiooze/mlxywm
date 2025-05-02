@@ -21,13 +21,14 @@ class TaskOrder extends Model
         "item_id",
         "price",
         "orderNo",
-        "freeze_at"
+        "freeze_at",
+        "mobile"
     ];
 
      public function user() {
         return $this->belongsTo(User::class);
     }
-     public function taskId() {
+     public function taskIds() {
         return $this->belongsTo(TaskIndex::class,"task_id");
     }
     public function item() {

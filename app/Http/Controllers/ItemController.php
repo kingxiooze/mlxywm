@@ -24,10 +24,10 @@ class ItemController extends Controller
         $search_name = $request->input("search_name", null);
         // 类型ID
         $category_id = $request->input("category_id", 1);
-         $isVip = $request->input("vip", null);
-         if($isVip==1){
-             $category_id = 2;
-         }
+        //  $isVip = $request->input("vip", null);
+        //  if($isVip==1){
+        //      $category_id = 2;
+        //  }
         $where = [
             "is_sell" => true
         ];
@@ -48,9 +48,9 @@ class ItemController extends Controller
             array_push($where, ["name", "like", "%$search_name%"]);
         }
 
-        if($category_id !== null) {
-            array_push($where, ["category_id", "=", $category_id]);
-        }
+        // if($category_id !== null) {
+        //     array_push($where, ["category_id", "=", $category_id]);
+        // }
         
 
         $result = $this->repository

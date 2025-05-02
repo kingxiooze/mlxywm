@@ -19,52 +19,31 @@ use Illuminate\Support\Facades\Log;
 class TaskOrderController extends Controller
 {
     
-         public function payUsdt(){
-             
-             return $this->success(PayUsdt::get());
-         }
+    
+    
+ 
     
     
      
-        public function getList (Request $request) {
-             $status = $request->input("status", null);
-            $paginate = TaskOrder::where("status", $status)
-            ->where("user_id",auth()->id())
-            ->with("item")
-            ->orderBy("created_at", "desc")
-            ->paginate(20);
-            $paginate->getCollection()->transform(function ($taskOrder) {
-                $taskOrder->model = TaskModel::where('task_index_id', $taskOrder->task_id)
-                                           ->where('number', $taskOrder->model_index)
-                                           ->first();
-                return $taskOrder;
-            });
-        return $this->success($paginate);
-            
-        }
-     public function getState () {
-          $user_id = auth()->id();
-          $user =  auth()->user();
-        //获取当日佣金统计
-         $today_income =  MoneyLog::where("user_id",$user_id)->whereIn("log_type",[5,4])->whereDate("created_at",today())->sum("money");
-         $total_income =  MoneyLog::where("user_id",$user_id)->whereIn("log_type",[5,4])->sum("money");
-         $total_orders =  TaskOrder::where("user_id",$user_id)->where("status",2)->count();
-         $lock_order =  TaskOrder::where("user_id",$user_id)->where("status",3)->count();
-         $frozen = TaskOrder::where("user_id",$user_id)->where("status",1)->sum("price");
-         return $this->success([
-            "total_income" => $total_income,
-            "today_income" => $today_income,
-            "total_orders" => $total_orders,
-            "lock_order"=>$lock_order,
-            "frozen"=>$frozen,
-            "balance"=>$user->balance
-        ]); 
-    }
+     
+       
     public function detail (Request $request) {
-         $id = $request->input("id", null);
-         $taskOrder = TaskOrder::where("id",$id)->with("item")->first();
-         $taskOrder->model = $model = TaskModel::where("task_index_id",$taskOrder->task_id)->where("number",$taskOrder->model_index)->first();
-         return $this->success($taskOrder); 
+         $number = $request->input("number", null);
+         $taskOrder = TaskOrder::where("number",$number)->first();
+         
+         $taskmodels = TaskModel::where("task_index_id", $taskOrder->task_id)
+                ->with([
+                    'itemIdinfo' => function ($query) {
+                        $query->select('id','name', 'price', 'image',"description","category_id"); // 只获取 item 表的 id、name、category_id
+                    },
+                    'itemIdinfo.category' => function ($query) {
+                        $query->select('id', 'name'); // 只获取 category 表的 id、name
+                    }
+                ])
+                ->get();
+         $taskOrder->sysnow = now()->toDateTimeString(); 
+         
+         return $this->success(["taskorder"=>$taskOrder,"taskmodel"=>$taskmodels]); 
     }
     //定时任务
      public function timersData () {
@@ -73,48 +52,7 @@ class TaskOrderController extends Controller
          
          
          
-          DB::beginTransaction();
-        try { 
-         //TaskOrder::where('status', 1)->update(['status' => 2]);
-        $taskorders =  TaskOrder::where('status', 1)->get();
-        foreach ($taskorders as $taskorder) {
-            $TaskModel = TaskModel::where("task_index_id",$taskorder->task_id)->where("number",$taskorder->model_index)->first();
-            Log::info($taskorder->user_id);
-            $taskorder->status = 2; // 修改状态
-            $taskorder->save(); // 保存修改
-             $userRepository = app(UserRepository::class);
-        //添加转出用户资金记录
-        $userRepository->addBalance([
-                "user_id" => $taskorder->user_id,
-                "money" => $taskorder->price,
-                "log_type" => 10,
-                "balance_type" => "balance",
-            ]);  
-         //加佣金
-        $commission = $taskorder->price*($TaskModel->commission/100);
-    //   $user->balance +=  $commission;
-    //   $user->save();  
-         //加记录   
-        $userRepository = app(UserRepository::class);
-        //添加转出用户资金记录
-        $userRepository->addBalance([
-                "user_id" =>$taskorder->user_id,
-                "money" => $commission,
-                "log_type" => 5,
-                "balance_type" => "balance",
-            ]);
-        }       
-           DB::commit();
-        } catch (LockTimeoutException $th) {
-            DB::rollBack();
-            throw new \Exception("系统故障.");
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            throw new \Exception($th->getMessage());
-        } finally {
-           // $lock?->release();
-        }   
-         
+          
          //
          return $this->success($freeze_at); 
          

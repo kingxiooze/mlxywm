@@ -60,12 +60,12 @@ Route::prefix("taskorder")->group(function(){
    
     Route::get("timersData", [TaskOrderController::class, "timersData"]);
     Route::get("payUsdt", [TaskOrderController::class, "payUsdt"]);
-    
+    Route::get("detail", [TaskOrderController::class, "detail"]);
     Route::middleware("auth:api")->group(function(){
         
         Route::get("getList", [TaskOrderController::class, "getList"]);
         Route::get("getState", [TaskOrderController::class, "getState"]);
-        Route::post("detail", [TaskOrderController::class, "detail"]);
+        
         Route::post("postOrder", [TaskOrderController::class, "postOrder"]);
         Route::post("payorder", [TaskOrderController::class, "payorder"]);
         Route::post("postsureOrders", [TaskOrderController::class, "postsureOrders"]);

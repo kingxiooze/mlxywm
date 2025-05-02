@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Admin\Actions\Grid\BatchCreateWhitelist;
 use App\Models\TaskModel;
+use App\Models\Item;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
@@ -20,16 +21,14 @@ class TaskModelController extends AdminController
     protected function grid()
     {
         $model = new TaskModel();
-       
+       $model = $model->with("itemIdinfo");
         return Grid::make($model, function (Grid $grid) {
             $grid->column('id')->sortable();
             // $grid->column('user_id');
             $grid->column('number', "编号");
-            // $grid->column('item_id');
-            $grid->column('type', "是否爆单")->switch();
-            $grid->column('cmtype', "是否固定佣金")->switch();
-            $grid->column('commission', "佣金");
-            $grid->column('item_price', "商品价格(比例0.99)");
+            $taskOptions = Item::orderBy('created_at', 'desc')->pluck('location', 'id')->toArray();
+            $grid->column('item_id', "商品")->select($taskOptions);
+            $grid->column('itemIdinfo.price', "价格");
             $grid->model()->orderBy("number", "asc");
             $grid->tools(function ($tools) {
             $taskIndexId = request()->get('task_index_id');
@@ -72,10 +71,14 @@ class TaskModelController extends AdminController
         return Form::make(new TaskModel(), function (Form $form) {
             $form->display('id');
             $form->text('number');
-            $form->switch('type',"是否爆单");
-            $form->text('commission',"佣金(比例)");
-            $form->text('item_price',"商品价格(比例0.99)");    
+              $taskOptions = Item::orderBy('created_at', 'desc')->pluck('location', 'id')->toArray();
+            $form->select('item_id', '选择商品')
+                ->options($taskOptions)
+                ->required();
+            //$form->text('item_id',"商品id");  
+            
             $form->hidden('task_index_id')-> default(request()->get('task_index_id'));
+            
             // $form->display('created_at');
             // $form->display('updated_at');
         });

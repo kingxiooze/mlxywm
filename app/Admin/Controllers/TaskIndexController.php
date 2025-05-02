@@ -4,6 +4,8 @@ namespace App\Admin\Controllers;
 
 use App\Admin\Actions\Grid\BatchCreateWhitelist;
 use App\Models\TaskIndex;
+use App\Models\TaskModel;
+use App\Models\Item;
 use Dcat\Admin\Form;
 use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
@@ -25,12 +27,23 @@ class TaskIndexController extends AdminController
             $grid->column('id')->sortable();
             // $grid->column('user_id');
             $grid->column('name', "名称");
-             $grid->column("buy_log", "任务列表")->display(function(){
-                return "任务列表";
+             $grid->column("buy_log", "商品列表")->display(function(){
+                return "商品列表";
             })
             ->link(function ($value) {
                 return admin_url('taskmodel?task_index_id='.$this->id);
             });
+              $grid->column("total_yj", "商品总价")->display(function(){
+                   //TaskModel::
+                //   $totalPrice = TaskModel::where('task_index_id', $this->id)
+                //     ->withSum('itemIdinfo', 'price')
+                //     ->get()
+                //     ->sum('item_sum_price');
+                    $totalPrice = TaskModel::where('task_index_id',  $this->id)
+                    ->join('items', 'taskmodel.item_id', '=', 'items.id')
+                    ->sum('items.price');
+                    return $totalPrice;
+                });
             
              $grid->column('copy')->display("复制分组")->modal('复制分组', function ($modal) {
             $id = $this->getKey(); // 使用 getKey() 而不是直接访问 id
@@ -74,10 +87,11 @@ class TaskIndexController extends AdminController
         
         $form->table('taskmodels', '具体任务', function (NestedForm $table) {
             $table->text('number', '编号')->rules('required|max:20');
-            $table->switch("type",'是否爆单');
-             $table->switch("cmtype",'是否固定');
-            $table->text('item_price', '商品价格(比例0.99)');
-            $table->text('commission', '佣金');
+           $taskOptions = Item::orderBy('created_at', 'desc')->pluck('location', 'id')->toArray();
+            $table->select('item_id', '选择商品')
+                ->options($taskOptions)
+                ->required();
+            // $grid->column('task_id', "任务组")->select($taskOptions); 
         });
     });
     }
