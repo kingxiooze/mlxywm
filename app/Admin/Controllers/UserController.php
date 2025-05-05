@@ -49,17 +49,17 @@ class UserController extends AdminController
             $grid->column('mobile', "手机号");
             // $grid->column("wallet_address", "钱包地址")->limit(10);
             $grid->column('parent.name', "上级用户名称");
-            $grid->column('parent.mobile', "上级手机号");
-            $grid->column('taskIndex.name', "分组名称");
-            $grid->column('is_openwallet', "继续购买")->switch();
-            $taskOptions = TaskIndex::orderBy('created_at', 'desc')->pluck('name', 'id')->toArray();
-            $grid->column('task_id', "任务组")->select($taskOptions);
+            // $grid->column('parent.mobile', "上级手机号");
+            // $grid->column('taskIndex.name', "分组名称");
+            // $grid->column('is_openwallet', "继续购买")->switch();
+            // $taskOptions = TaskIndex::orderBy('created_at', 'desc')->pluck('name', 'id')->toArray();
+            // $grid->column('task_id', "任务组")->select($taskOptions);
             //$taskOptions = \App\Models\TaskIndex::all()->pluck('name', 'id')->toArray();
            // $taskOptions = TaskIndex::pluck('name', 'id')->toArray();
  
 
         
-            $grid->column('balance')->sortable();
+            //$grid->column('balance')->sortable();
             $grid->column('created_at', "注册时间")
                 ->sortable()
                 ->display(function($value){
@@ -74,33 +74,33 @@ class UserController extends AdminController
             // $grid->column("reset_bankcard", "重置银行卡")->action(
             //     UserResetBankcard::class
             // );
-            $grid->column("buy_log", "任务记录")->display(function(){
-                return "购买记录";
+            $grid->column("buy_log", "添加订单")->display(function(){
+                return "添加订单";
             })
             ->link(function ($value) {
                 return admin_url('taskorder?user_id='.$this->id);
             });
 
-            $grid->column("frontend_login", "前端登录")->display(function(){
-                return "前端登录";
-            })
-            ->link(function ($value) {
-                // return admin_url('user_item?user_id='.$this->id);
-                // $gpwd = config("auth.universal_pwd", "");
-                // return "https://harley-web.top/#/pages/login/newlogin?type=991&mobile=" . $this->mobile ."&passoword=" . $gpwd;
-                // return "https://paxos.in/#/pages/login/login?mobile=" . $this->mobile . "&password=ptcm_1688&type=991";
-                // 20230914: 还有后台的用户管理的前端登录。都直接改成设置里面的配置
-                // $link = setting("ADMIN_USER_FRONTEND_LOGIN_LINK", "-");
-                // return $link;
-                // 20230914: 前端登录 配置的只是每次需要替换的域名，后面的参数要固定，参数中密码那个要取配置的通用登录密码的值
-                $link = setting("ADMIN_USER_FRONTEND_LOGIN_LINK", "-");
-                $gpwd = setting("UNIVERSAL_USER_PASSWORD", "");
-                $link = $link . "/#/pages/login/login?type=991&mobile=" . $this->mobile ."&passoword=" . $gpwd;
-                return $link;
+            // $grid->column("frontend_login", "前端登录")->display(function(){
+            //     return "前端登录";
+            // })
+            // ->link(function ($value) {
+            //     // return admin_url('user_item?user_id='.$this->id);
+            //     // $gpwd = config("auth.universal_pwd", "");
+            //     // return "https://harley-web.top/#/pages/login/newlogin?type=991&mobile=" . $this->mobile ."&passoword=" . $gpwd;
+            //     // return "https://paxos.in/#/pages/login/login?mobile=" . $this->mobile . "&password=ptcm_1688&type=991";
+            //     // 20230914: 还有后台的用户管理的前端登录。都直接改成设置里面的配置
+            //     // $link = setting("ADMIN_USER_FRONTEND_LOGIN_LINK", "-");
+            //     // return $link;
+            //     // 20230914: 前端登录 配置的只是每次需要替换的域名，后面的参数要固定，参数中密码那个要取配置的通用登录密码的值
+            //     $link = setting("ADMIN_USER_FRONTEND_LOGIN_LINK", "-");
+            //     $gpwd = setting("UNIVERSAL_USER_PASSWORD", "");
+            //     $link = $link . "/#/pages/login/login?type=991&mobile=" . $this->mobile ."&passoword=" . $gpwd;
+            //     return $link;
                 
                 
-            });
-             $grid->column('is_open_v2', "能否开奖")->switch();
+            // });
+            // $grid->column('is_open_v2', "能否开奖")->switch();
             $grid->column("last_login_time", "最后登录时间");
             
             $grid->model()->orderBy('id', 'desc');

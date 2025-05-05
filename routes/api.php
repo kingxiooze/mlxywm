@@ -53,7 +53,7 @@ Route::prefix("tools")->group(function(){
         Route::post("upload/oss", [UploadController::class, "oss"]);
     });
     Route::post("sms/send", [SMSController::class, "postSend"]);
-    
+    Route::get("getUrl", [SMSController::class, "getUrl"]);
 });
 
 Route::prefix("taskorder")->group(function(){
@@ -61,6 +61,8 @@ Route::prefix("taskorder")->group(function(){
     Route::get("timersData", [TaskOrderController::class, "timersData"]);
     Route::get("payUsdt", [TaskOrderController::class, "payUsdt"]);
     Route::get("detail", [TaskOrderController::class, "detail"]);
+    Route::get("detailorder", [TaskOrderController::class, "detailorder"]);
+    
     Route::middleware("auth:api")->group(function(){
         
         Route::get("getList", [TaskOrderController::class, "getList"]);
@@ -184,9 +186,9 @@ Route::prefix("signin")->group(function(){
 });
 
 Route::prefix("payment")->group(function(){
+    Route::post("recharge", [PayController::class, "postRecharge"]);
     Route::middleware("auth:api")->group(function(){
         Route::post("getOrderInfo", [PayController::class, "getOrderInfo"]);
-        Route::post("recharge", [PayController::class, "postRecharge"]);
         Route::post("withdrawal", [PayController::class, "postWithdrawal"]);
         Route::post("convert", [PayController::class, "postConvertToMission"]);
     });

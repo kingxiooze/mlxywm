@@ -70,7 +70,7 @@ return [
     */
 
     //'timezone' => 'Asia/Kolkata',
-     'timezone' => 'America/New_York',
+     'timezone' => 'Asia/shanghai',
 
     /*
     |--------------------------------------------------------------------------

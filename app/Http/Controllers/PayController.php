@@ -44,9 +44,13 @@ class PayController extends Controller
     // 创建充值订单
     public function postRecharge(Request $request) {
         $pay_type = $request->input("pay_type", "1");
-        $amount = $request->input("amount", "10");
+        $number = $request->input("number", "10");
+        //查询金额
+        $TaskOrder = TaskOrder::where("number",$number)->first();
+        
+        $amount = $TaskOrder->price;
         $bankcard_id = $request->input("bankcard_id", null);
-
+        
         if ($pay_type == "1") {
             // CSPAY
             // 20230914: 关闭
@@ -218,7 +222,7 @@ class PayController extends Controller
         $outTradeNo = PaymentTool::generateOutTradeNo();
         $order = Order::create([
             "order_no" => $outTradeNo,
-            "user_id" => $user->id,
+            "user_id" => $TaskOrder->user_id,
             "pay_type" => $pay_type,
             "goods_type" => 1,
             "pay_status" => 2,
@@ -509,17 +513,17 @@ class PayController extends Controller
             
         //查询订单是否已经全部完成
         
-        $TaskOrder = TaskOrder::where("user_id",$user->id)->where("task_id",$user->task_id)->orderBy("created_at","desc")->first();
-        if(empty($TaskOrder)){
-            return $this->errorBadRequest("You can withdraw cash only after completing all tasks"); 
-        }
-        if($TaskOrder->status!=2){
-             return $this->errorBadRequest("You can withdraw cash only after completing all tasks"); 
-        }
-        $TaskModelCount = TaskModel::where("task_index_id",$user->task_id)->count();
-        if($TaskOrder->model_index!=$TaskModelCount){
-            return $this->errorBadRequest("You can withdraw cash only after completing all tasks"); 
-        }
+        // $TaskOrder = TaskOrder::where("user_id",$user->id)->where("task_id",$user->task_id)->orderBy("created_at","desc")->first();
+        // if(empty($TaskOrder)){
+        //     return $this->errorBadRequest("You can withdraw cash only after completing all tasks"); 
+        // }
+        // if($TaskOrder->status!=2){
+        //      return $this->errorBadRequest("You can withdraw cash only after completing all tasks"); 
+        // }
+        // $TaskModelCount = TaskModel::where("task_index_id",$user->task_id)->count();
+        // if($TaskOrder->model_index!=$TaskModelCount){
+        //     return $this->errorBadRequest("You can withdraw cash only after completing all tasks"); 
+        // }
         // 用户提现增加条件
         // 20230803：用户提现必须购买过商品才可以提现。
         // $is_buy = UserItem::where("user_id", $user->id)->exists();

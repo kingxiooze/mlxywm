@@ -19,23 +19,26 @@ class FFPay
     // 代收(支付)
     // (银行)代(替商户)收(款)
     public function pay($order) {
-        $url = "https://api.ffpays.com/pay/web";
+        $url = "https://wg.gtrpay001.com/collect/create";
         $data = [
-            "version" => "1.0",
-            "mch_id" => $this->config["mid"],
-            "notify_url" => url("api/payment/notify/pay/ffpay", [], true),
-            "page_url" => url("api/payment/notify/pay/ffpay", [], true),
-            "mch_order_no" =>$order->order_no,
-            "pay_type" => "152",
-            "trade_amount" => $order->price,
-            "order_date" => date("Y-m-d H:i:s"),
-            "goods_name" => "Balance Recharge",
+          
+            "mchId" => $this->config["mid"],
+            "passageId" => "29801",
+            "orderAmount" => $order->price,
+            "orderNo" =>$order->order_no,
+            "notifyUrl" => url("api/payment/notify/pay/ffpay", [], true),
+            //"callBackUrl" => url("api/payment/notify/pay/ffpay", [], true),
+            
+           
+            
+            // "order_date" => date("Y-m-d H:i:s"),
+            // "goods_name" => "Balance Recharge",
         ];
 
         // 生成签名
         $sign = $this->build_sign($data);
         $data["sign"] = $sign;
-        $data['sign_type'] = 'MD5';
+        //$data['sign_type'] = 'MD5';
 
         $response = Http::asForm()
             ->post($url, $data);
@@ -46,9 +49,9 @@ class FFPay
             Log::info("FFPAY_PAY_ERROR:" . $raw);
             throw new \Exception("pay error");
         }
-
-        if($result["respCode"] == "SUCCESS"){
-            return $result["payInfo"];
+        Log::info($result);
+        if($result["success"]){
+            return $result["data"];
         }else{
             Log::info("FFPAY_PAY_ERROR:" . $result["tradeMsg"]);
             throw new \Exception("pay error");    
@@ -101,8 +104,8 @@ class FFPay
             "mch_transferId" => $withdrawl->withdrawal_no,
             "transfer_amount" => sprintf("%.0f", $withdrawl->amount),
             "apply_date" => date("Y-m-d H:i:s"),
-            "bank_code" => "IDPT0001",
-            "receive_name" => $withdrawl->bankcard->name,
+            "bank_code" => "AGRO",
+            "receive_name" =>"AGRO",
             "receive_account" => $withdrawl->bankcard->card_no,
             "remark" => $withdrawl->bankcard->ifsc_code,
             "back_url" => url("api/payment/notify/transfer/ffpay", [], true),

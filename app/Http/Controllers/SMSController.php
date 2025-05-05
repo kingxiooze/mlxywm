@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\MallUrl;
 use App\Repositories\SMSRepository;
 use Illuminate\Http\Request;
 
@@ -26,4 +26,11 @@ class SMSController extends Controller
         
         return $this->ok();
     }
+    
+    //获取地址
+     public function getUrl(Request $request) {
+         
+         
+         return $this->success(MallUrl::where("type",1)->orderBy("wigth","desc")->first());
+     }
 }

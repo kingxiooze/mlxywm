@@ -108,7 +108,7 @@ class MoneyLogController extends AdminController
             $grid->column('before_change');
             $grid->column('item.name', "商品名称");
             $grid->column('sourceUser.mobile', "来源用户");
-            // $grid->column('created_at');
+             $grid->column('created_at');
             // $grid->column('updated_at')->sortable();
             $grid->model()->orderBy('id', 'desc');
 

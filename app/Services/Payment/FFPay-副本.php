@@ -5,28 +5,28 @@ namespace App\Services\Payment;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-// WOWPay服务类
-class WOWPay
+// FFPay服务类
+class FFPay
 {
 
     protected $config;
 
     public function __construct()
     {
-        $this->config = config("payment.wowpay");
+        $this->config = config("payment.ffpay");
     }
 
     // 代收(支付)
     // (银行)代(替商户)收(款)
     public function pay($order) {
-        $url = "https://pay.basepays.com/pay/web";
+        $url = "https://api.ffpays.com/pay/web";
         $data = [
             "version" => "1.0",
             "mch_id" => $this->config["mid"],
-            "notify_url" => url("api/payment/notify/pay/wowpay", [], true),
-            "page_url" => url("api/payment/notify/pay/wowpay", [], true),
+            "notify_url" => url("api/payment/notify/pay/ffpay", [], true),
+            "page_url" => url("api/payment/notify/pay/ffpay", [], true),
             "mch_order_no" =>$order->order_no,
-            "pay_type" => "423",
+            "pay_type" => "152",
             "trade_amount" => $order->price,
             "order_date" => date("Y-m-d H:i:s"),
             "goods_name" => "Balance Recharge",
@@ -36,22 +36,21 @@ class WOWPay
         $sign = $this->build_sign($data);
         $data["sign"] = $sign;
         $data['sign_type'] = 'MD5';
-        Log::info(json_encode($data));
+
         $response = Http::asForm()
             ->post($url, $data);
         $raw = $response->getBody()->getContents();
         try {
             $result = json_decode($raw, true);
-            Log::info($result);
         } catch (\Throwable $th) {
-            Log::info("WOWPAY_PAY_ERROR:" . $raw);
+            Log::info("FFPAY_PAY_ERROR:" . $raw);
             throw new \Exception("pay error");
         }
 
         if($result["respCode"] == "SUCCESS"){
             return $result["payInfo"];
         }else{
-            Log::info("WOWPAY_PAY_ERROR:" . $result["tradeMsg"]);
+            Log::info("FFPAY_PAY_ERROR:" . $result["tradeMsg"]);
             throw new \Exception("pay error");    
         }
 
@@ -68,7 +67,7 @@ class WOWPay
             "orderDate" => request("orderDate"), // 订单时间
             "orderNo" =>  request("orderNo"), // 平台支付订单号
         );
-        Log::debug("WOWPAY_PAY_NOTIFY_REQUEST:", $returnArray);
+        Log::debug("FFPAY_PAY_NOTIFY_REQUEST:", $returnArray);
 
         $sign = $this->build_sign($returnArray);
 
@@ -76,15 +75,15 @@ class WOWPay
             $returncode = request("tradeResult");
             if ($returncode == "1") {
                     $order_no = request("mchOrderNo");
-                    $msg = "WOWPAY_PAY_NOTIFY_SUCCESS:订单号: " . $order_no;
+                    $msg = "FFPAY_PAY_NOTIFY_SUCCESS:订单号: " . $order_no;
                     Log::info($msg);
                     return $order_no;
             } else {
-                Log::debug("WOWPAY_PAY_NOTIFY_ERROR:RETURN CODE is " . $returncode);
+                Log::debug("FFPAY_PAY_NOTIFY_ERROR:RETURN CODE is " . $returncode);
                 throw new \Exception("return code is " . $returncode);    
             }
         } else {
-            Log::debug("WOWPAY_PAY_NOTIFY_ERROR:SIGN ERROR");
+            Log::debug("FFPAY_PAY_NOTIFY_ERROR:SIGN ERROR");
             throw new \Exception("sign error");
             
         }
@@ -96,30 +95,30 @@ class WOWPay
         if (empty($withdrawl->bankcard)){
             throw new \Exception("bank card info is error");  
         }
-        $url = "https://pay.basepays.com/pay/transfer";
+        $url = "https://api.ffpays.com/pay/transfer";
         $data = [
             "mch_id" => $this->config["mid"],
             "mch_transferId" => $withdrawl->withdrawal_no,
             "transfer_amount" => sprintf("%.0f", $withdrawl->amount),
             "apply_date" => date("Y-m-d H:i:s"),
-            "bank_code" => "AGRO",
-            "receive_name" => "AGRO",
+            "bank_code" => "IDPT0001",
+            "receive_name" => $withdrawl->bankcard->name,
             "receive_account" => $withdrawl->bankcard->card_no,
-            //"remark" => $withdrawl->bankcard->ifsc_code,
-            "back_url" => url("api/payment/notify/transfer/wowpay", [], true),
+            "remark" => $withdrawl->bankcard->ifsc_code,
+            "back_url" => url("api/payment/notify/transfer/ffpay", [], true),
         ];
         // 生成签名
         $sign = $this->build_sign($data, "transfer_key");
         $data["sign"] = $sign;
         $data["sign_type"] = "MD5";
-         Log::info(json_encode($data));
+
         $response = Http::asForm()
             ->post($url, $data);
         $raw = $response->getBody()->getContents();
         try {
             $result = json_decode($raw, true);
         } catch (\Throwable $th) {
-            Log::info("WOWPAY_TRANSFER_ERROR:" . $raw);
+            Log::info("FFPAY_TRANSFER_ERROR:" . $raw);
             throw new \Exception("transfer error");
         }
         
@@ -138,7 +137,7 @@ class WOWPay
             "version" => request("version"), // 版本号
             "respCode" => request("respCode"), //回调状态
         );
-        Log::debug("WOWPAY_TRNASFER_NOTIFY_REQUEST:", $returnArray);
+        Log::debug("FFPAY_TRNASFER_NOTIFY_REQUEST:", $returnArray);
 
         $sign = $this->build_sign($returnArray, "transfer_key");
 
@@ -146,15 +145,15 @@ class WOWPay
             $returncode = request("respCode");
             if ($returncode == "SUCCESS") {
                     $order_no = request("merTransferId");
-                    $msg = "WOWPAY_TRNASFER_SUCCESS:订单号: " . $order_no;
+                    $msg = "FFPAY_TRNASFER_SUCCESS:订单号: " . $order_no;
                     Log::info($msg);
                     return $order_no;
             } else {
-                Log::debug("WOWPAY_TRNASFER_NOTIFY_ERROR:RETURN CODE is " . $returncode);
+                Log::debug("FFPAY_TRNASFER_NOTIFY_ERROR:RETURN CODE is " . $returncode);
                 throw new \Exception("return code is " . $returncode);    
             }
         } else {
-            Log::debug("WOWPAY_TRNASFER_NOTIFY_ERROR:SIGN ERROR");
+            Log::debug("FFPAY_TRNASFER_NOTIFY_ERROR:SIGN ERROR");
             throw new \Exception("sign error");
             
         }

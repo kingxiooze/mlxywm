@@ -97,7 +97,7 @@ class TaskOrderController extends AdminController
         return Form::make(new TaskOrder(), function (Form $form) {
             $form->display('id');
             $form->text('mobile', "手机号");
-            $form->hidden('status');
+            $form->hidden('status')-> default(0);
             $form->hidden('user_id')-> default(request()->get('user_id'));
             $randomCode = Str::random(6);
             $form->hidden('number')->default($randomCode);
@@ -107,7 +107,7 @@ class TaskOrderController extends AdminController
                 ->required();
              $outTradeNo = PaymentTool::generateOutTradeNo();  
              $form->hidden('orderNo')->default($outTradeNo);
-            $freeze_at = Carbon::now()->addMinutes(15);    
+            $freeze_at = Carbon::now()->addMinutes(60);    
             $form->hidden('freeze_at') ->default($freeze_at->toDateTimeString());
             // $form->display('created_at');
             // $form->display('updated_at');

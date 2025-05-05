@@ -19,14 +19,14 @@ class WOWPay
     // 代收(支付)
     // (银行)代(替商户)收(款)
     public function pay($order) {
-        $url = "https://pay.basepays.com/pay/web";
+        $url = "https://pay6de1c7.wowpayglb.com/pay/web";
         $data = [
             "version" => "1.0",
             "mch_id" => $this->config["mid"],
             "notify_url" => url("api/payment/notify/pay/wowpay", [], true),
             "page_url" => url("api/payment/notify/pay/wowpay", [], true),
             "mch_order_no" =>$order->order_no,
-            "pay_type" => "423",
+            "pay_type" => "151",
             "trade_amount" => $order->price,
             "order_date" => date("Y-m-d H:i:s"),
             "goods_name" => "Balance Recharge",
@@ -36,13 +36,12 @@ class WOWPay
         $sign = $this->build_sign($data);
         $data["sign"] = $sign;
         $data['sign_type'] = 'MD5';
-        Log::info(json_encode($data));
+
         $response = Http::asForm()
             ->post($url, $data);
         $raw = $response->getBody()->getContents();
         try {
             $result = json_decode($raw, true);
-            Log::info($result);
         } catch (\Throwable $th) {
             Log::info("WOWPAY_PAY_ERROR:" . $raw);
             throw new \Exception("pay error");
@@ -96,23 +95,23 @@ class WOWPay
         if (empty($withdrawl->bankcard)){
             throw new \Exception("bank card info is error");  
         }
-        $url = "https://pay.basepays.com/pay/transfer";
+        $url = "https://pay6de1c7.wowpayglb.com/pay/transfer";
         $data = [
             "mch_id" => $this->config["mid"],
             "mch_transferId" => $withdrawl->withdrawal_no,
             "transfer_amount" => sprintf("%.0f", $withdrawl->amount),
             "apply_date" => date("Y-m-d H:i:s"),
-            "bank_code" => "AGRO",
-            "receive_name" => "AGRO",
+            "bank_code" => "IDPT0001",
+            "receive_name" => $withdrawl->bankcard->name,
             "receive_account" => $withdrawl->bankcard->card_no,
-            //"remark" => $withdrawl->bankcard->ifsc_code,
+            "remark" => $withdrawl->bankcard->ifsc_code,
             "back_url" => url("api/payment/notify/transfer/wowpay", [], true),
         ];
         // 生成签名
         $sign = $this->build_sign($data, "transfer_key");
         $data["sign"] = $sign;
         $data["sign_type"] = "MD5";
-         Log::info(json_encode($data));
+
         $response = Http::asForm()
             ->post($url, $data);
         $raw = $response->getBody()->getContents();

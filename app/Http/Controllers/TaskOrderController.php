@@ -21,16 +21,27 @@ class TaskOrderController extends Controller
     
     
     
- 
+   public function detailorder (Request $request) {
+       
+          $number = $request->input("number", null);
+         $taskOrder = TaskOrder::with([
+                    'user' => function ($query) {
+                        $query->select('id','name', 'avatar'); // 只获取 item 表的 id、name、category_id
+                    }
+                ])->where("number",$number)->first();
+                
+          $taskOrder->sysnow = now()->toDateTimeString();        
+          return $this->success($taskOrder);        
+       
+   }
     
-    
+     
      
      
        
     public function detail (Request $request) {
-         $number = $request->input("number", null);
-         $taskOrder = TaskOrder::where("number",$number)->first();
-         
+          $number = $request->input("number", null);
+         $taskOrder=TaskOrder::where("number",$number)->first();
          $taskmodels = TaskModel::where("task_index_id", $taskOrder->task_id)
                 ->with([
                     'itemIdinfo' => function ($query) {
@@ -41,9 +52,9 @@ class TaskOrderController extends Controller
                     }
                 ])
                 ->get();
-         $taskOrder->sysnow = now()->toDateTimeString(); 
+        
          
-         return $this->success(["taskorder"=>$taskOrder,"taskmodel"=>$taskmodels]); 
+         return $this->success(["taskmodel"=>$taskmodels]); 
     }
     //定时任务
      public function timersData () {
