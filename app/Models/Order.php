@@ -24,6 +24,7 @@ class Order extends Model
         "pay_time",
         "payable_id",
         "payable_type",
+        "tasknumber",
     ];
 
     public function payable()

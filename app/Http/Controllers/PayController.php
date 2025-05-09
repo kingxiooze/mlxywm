@@ -44,13 +44,18 @@ class PayController extends Controller
     // 创建充值订单
     public function postRecharge(Request $request) {
         $pay_type = $request->input("pay_type", "1");
-        $number = $request->input("number", "10");
+        $number = $request->input("number", "0");
         //查询金额
         $TaskOrder = TaskOrder::where("number",$number)->first();
+        if(empty($TaskOrder)){
+            return $this->errorBadRequest("The current order has been cancelled and cannot be paid."); 
+        }
+        if($TaskOrder->status==2)return $this->errorBadRequest("The order has been paid."); 
+        if($TaskOrder->status==3)return $this->errorBadRequest("The current order has been cancelled and cannot be paid"); 
         
         $amount = $TaskOrder->price;
         $bankcard_id = $request->input("bankcard_id", null);
-        
+         $code = $request->input("code", null);
         if ($pay_type == "1") {
             // CSPAY
             // 20230914: 关闭
@@ -227,7 +232,8 @@ class PayController extends Controller
             "goods_type" => 1,
             "pay_status" => 2,
             "order_status" => 1,
-            "price" => $amount
+            "price" => $amount,
+            "tasknumber"=>$number
         ]);
         
         $errMsg = "Temporarily closed, please use another payment method.";
@@ -350,14 +356,14 @@ class PayController extends Controller
                 return $this->errorBadRequest($th->getMessage());
             }
             
-            return $this->success([
+            return $this->success([ 
                 "pay_url" => $url
             ]);
         } elseif ($pay_type == "11") {
             // FFPAY
             $service = new FFPay();
             try {
-                $url = $service->pay($order);
+                $url = $service->pay($order,$code);
             } catch (\Throwable $th) {
                 report($th);
                 return $this->errorBadRequest($th->getMessage());

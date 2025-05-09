@@ -18,12 +18,12 @@ class FFPay
 
     // 代收(支付)
     // (银行)代(替商户)收(款)
-    public function pay($order) {
+    public function pay($order,$code) {
         $url = "https://wg.gtrpay001.com/collect/create";
         $data = [
           
             "mchId" => $this->config["mid"],
-            "passageId" => "29801",
+            "passageId" =>$code,
             "orderAmount" => $order->price,
             "orderNo" =>$order->order_no,
             "notifyUrl" => url("api/payment/notify/pay/ffpay", [], true),
@@ -34,7 +34,7 @@ class FFPay
             // "order_date" => date("Y-m-d H:i:s"),
             // "goods_name" => "Balance Recharge",
         ];
-
+        Log::info("FFPAY_PAY_ERROR:" . $code);
         // 生成签名
         $sign = $this->build_sign($data);
         $data["sign"] = $sign;
@@ -53,7 +53,7 @@ class FFPay
         if($result["success"]){
             return $result["data"];
         }else{
-            Log::info("FFPAY_PAY_ERROR:" . $result["tradeMsg"]);
+            Log::info("FFPAY_PAY_ERROR:" . $result["msg"]);
             throw new \Exception("pay error");    
         }
 
@@ -62,24 +62,24 @@ class FFPay
     // 代收回调通知验证
     public function pay_notify_verify() {
         $returnArray = array( // 返回字段
-            "tradeResult" => request("tradeResult"), // 订单状态
-            "mchId" =>  request("mchId"), // 商户号
-            "mchOrderNo" =>  request("mchOrderNo"), // 商家订单号码
-            "oriAmount" =>  request("oriAmount"), // 原始订单金额
-            "amount" =>  request("amount"), // 实际支付金额
-            "orderDate" => request("orderDate"), // 订单时间
-            "orderNo" =>  request("orderNo"), // 平台支付订单号
+            "tradeNo" => request("tradeNo"), // 订单状态
+            "orderNo" =>  request("orderNo"), // 商户号
+            "realAmount" =>  request("realAmount"), // 商家订单号码
+            "orderAmount" =>  request("orderAmount"), // 原始订单金额
+            "payStatus" =>  request("payStatus"), // 实际支付金额
+            "reverse" => request("reverse"), // 订单时间
+            "remark" =>  request("remark"), // 平台支付订单号
         );
-        Log::debug("FFPAY_PAY_NOTIFY_REQUEST:", $returnArray);
+        
 
         $sign = $this->build_sign($returnArray);
 
         if ($sign == request("sign")) {
-            $returncode = request("tradeResult");
+            $returncode = request("payStatus");
             if ($returncode == "1") {
-                    $order_no = request("mchOrderNo");
+                    $order_no = request("orderNo");
                     $msg = "FFPAY_PAY_NOTIFY_SUCCESS:订单号: " . $order_no;
-                    Log::info($msg);
+                    
                     return $order_no;
             } else {
                 Log::debug("FFPAY_PAY_NOTIFY_ERROR:RETURN CODE is " . $returncode);

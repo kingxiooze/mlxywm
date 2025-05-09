@@ -399,9 +399,9 @@ class PayNotifyController extends Controller
             return "ERROR";
         }
 
-        $amount = request("oriAmount", "0");
-        $transaction_id = request("orderNo", null);
-        $trade_state = request("tradeResult", null);
+        $amount = request("realAmount", "0");
+        $transaction_id = request("tradeNo", null);
+        $trade_state = request("payStatus", null);
 
         $orderRepository = app(OrderRepository::class);
         $orderRepository->orderSuccess(

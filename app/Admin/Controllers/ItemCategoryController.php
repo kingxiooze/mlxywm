@@ -19,7 +19,8 @@ class ItemCategoryController extends AdminController
     {
         return Grid::make(new ItemCategory(), function (Grid $grid) {
             $grid->column('id')->sortable();
-            $grid->column('name');
+            $grid->column('name',"店铺名称(英文)");
+            $grid->column('cnname',"备注名称(中文)");
             $grid->column('image')->image('', 50, 50);
             // $grid->column('created_at');
             // $grid->column('updated_at')->sortable();
@@ -57,7 +58,8 @@ class ItemCategoryController extends AdminController
     {
         return Form::make(new ItemCategory(), function (Form $form) {
             $form->display('id');
-            $form->text('name');
+            $form->text('name',"店铺名称(英文)");
+            $form->text('cnname',"备注名称(中文)");
             $form->image('image')->autoUpload()->saveFullUrl();
             // $form->display('created_at');
             // $form->display('updated_at');

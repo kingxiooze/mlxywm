@@ -34,7 +34,7 @@ class OrderBatchPass extends BatchAction
         ]);
         Order::whereIn("id", $ids)->get()->each(function (Order $order, int $key) {
             $repository = app(OrderRepository::class);
-            $repository->orderPass($order->order_no, $order->price);
+            $repository->orderPass($order);
         });
         return $this->response()
             ->success('操作成功')

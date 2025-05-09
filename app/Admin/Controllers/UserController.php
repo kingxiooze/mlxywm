@@ -165,37 +165,37 @@ class UserController extends AdminController
     {
         return Form::make(new User(), function (Form $form) {
             $form->display('id');
-            $form->text('name');
-            $form->image('avatar')->autoUpload()->saveFullUrl();
-            $form->text('mobile');
+            $form->text('name','名称');
+            $form->image('avatar','头像')->autoUpload()->saveFullUrl();
+            $form->text('mobile','手机号');
             // $form->text("wallet_address", "钱包地址");
             $form->password('password')->customFormat(function () {
                 return '';
             });
 
-            $form->password('trade_password')->customFormat(function(){
-                return '';
-            });
-            $form->text('parent_code');
-            $form->text('code');
+            // $form->password('trade_password')->customFormat(function(){
+            //     return '';
+            // });
+            // $form->text('parent_code');
+              //  $form->text('code');
 
-            $balanceTool = new ChangeUserBalance();
-            $balanceTool->setKey($form->model()->id);
-            $form->html($balanceTool, "增减余额");
-            $form->text('balance')->readOnly();
+            // $balanceTool = new ChangeUserBalance();
+            // $balanceTool->setKey($form->model()->id);
+            // $form->html($balanceTool, "增减余额");
+            // $form->text('balance')->readOnly();
 
-            $form->text('lv1_superior_id');
-            $form->text('lv2_superior_id');
-            $form->text('lv3_superior_id');
+            // $form->text('lv1_superior_id');
+            // $form->text('lv2_superior_id');
+            // $form->text('lv3_superior_id');
         
-            $form->switch("is_salesman", "是不是业务员");
-            $form->switch("is_open_v2", "能否开奖");
-            $form->switch("is_openwallet", "是否继续购买");
+            // $form->switch("is_salesman", "是不是业务员");
+            // $form->switch("is_open_v2", "能否开奖");
+            // $form->switch("is_openwallet", "是否继续购买");
             
-            $form->text("salesman_code", "业务员码");
+            // $form->text("salesman_code", "业务员码");
 
             //$form->text("earning_pect", "收益百分比");
-            $form->text("task_id", "任务id");
+            //$form->text("task_id", "任务id");
         })->saving(function (Form $form) {
             if (! $form->password) {
                 $form->deleteInput('password');
