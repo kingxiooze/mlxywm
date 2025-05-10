@@ -90,6 +90,7 @@ Route::prefix("auth")->group(function(){
 });
 
 Route::prefix("user")->group(function(){
+    Route::get("getmvlist", [UserController::class, "getmvlist"]); 
     Route::middleware("auth:api")->group(function(){
         
         Route::post("postaddress", [UserController::class, "postaddress"]);

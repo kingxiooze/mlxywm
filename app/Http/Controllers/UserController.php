@@ -29,6 +29,9 @@ class UserController extends Controller
     protected function getRepositoryClass(){
         return UserRepository::class;
     }
+     
+    
+    
     
     
      public function postaddress(Request $request) {
