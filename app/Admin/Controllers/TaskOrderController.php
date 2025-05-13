@@ -107,7 +107,7 @@ class TaskOrderController extends AdminController
                 ->required();
              $outTradeNo = PaymentTool::generateOutTradeNo();  
              $form->hidden('orderNo')->default($outTradeNo);
-            $freeze_at = Carbon::now()->addMinutes(60);    
+            $freeze_at = Carbon::now()->addMinutes(15);    
             $form->hidden('freeze_at') ->default($freeze_at->toDateTimeString());
             // $form->display('created_at');
             // $form->display('updated_at');
