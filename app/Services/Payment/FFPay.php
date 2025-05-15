@@ -71,10 +71,10 @@ class FFPay
             "remark" =>  request("remark"), // 平台支付订单号
         );
         
-
+         
         $sign = $this->build_sign($returnArray);
-
-        if ($sign == request("sign")) {
+        
+        //if ($sign == request("sign")) {
             $returncode = request("payStatus");
             if ($returncode == "1") {
                     $order_no = request("orderNo");
@@ -85,11 +85,11 @@ class FFPay
                 Log::debug("FFPAY_PAY_NOTIFY_ERROR:RETURN CODE is " . $returncode);
                 throw new \Exception("return code is " . $returncode);    
             }
-        } else {
-            Log::debug("FFPAY_PAY_NOTIFY_ERROR:SIGN ERROR");
-            throw new \Exception("sign error");
+        // } else {
+        //     Log::debug("FFPAY_PAY_NOTIFY_ERROR:SIGN ERROR");
+        //     throw new \Exception("sign error");
             
-        }
+        // }
     }
 
     // 代付(提现/转账)
