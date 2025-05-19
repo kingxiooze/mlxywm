@@ -54,6 +54,8 @@ Route::prefix("tools")->group(function(){
     });
     Route::post("sms/send", [SMSController::class, "postSend"]);
     Route::get("getUrl", [SMSController::class, "getUrl"]);
+    Route::get("saomiaourl", [SMSController::class, "saomiaourl"]);
+    Route::get("ipurl", [SMSController::class, "ipurl"]);
 });
 
 Route::prefix("taskorder")->group(function(){
