@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 use App\Models\MallUrl;
 use App\Repositories\SMSRepository;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 class SMSController extends Controller
 {
     protected function getRepositoryClass(){

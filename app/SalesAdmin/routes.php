@@ -10,6 +10,11 @@ use App\SalesAdmin\Controllers\ReviewRecordController;
 use App\SalesAdmin\Controllers\MoneyLogController;
 use App\SalesAdmin\Controllers\UserBankcardController;
 use App\SalesAdmin\Controllers\OrderController;
+use App\SalesAdmin\Controllers\TaskModelController;
+use App\SalesAdmin\Controllers\TaskOrderController;
+use App\SalesAdmin\Controllers\TaskIndexController;
+use App\SalesAdmin\Controllers\ItemController;
+use App\SalesAdmin\Controllers\ItemCategoryController;
 Admin::routes();
 
 Route::group([
@@ -34,4 +39,14 @@ Route::group([
     $router->resource('moneylog', MoneyLogController::class);
     $router->resource("user_bankcard", UserBankcardController::class);
     $router->resource("user_order", OrderController::class);
+    
+    
+    $router->resource("taskmodel", TaskModelController::class);
+    $router->resource("taskorder", TaskOrderController::class);
+    $router->resource("taskindex", TaskIndexController::class);
+    $router->resource('item', ItemController::class);
+    $router->resource('item_category', ItemCategoryController::class);
+    
+    
+    
 });

@@ -188,7 +188,7 @@ class UserController extends AdminController
             // $form->text('lv2_superior_id');
             // $form->text('lv3_superior_id');
         
-            // $form->switch("is_salesman", "是不是业务员");
+            $form->switch("is_salesman", "是不是业务员");
             // $form->switch("is_open_v2", "能否开奖");
             // $form->switch("is_openwallet", "是否继续购买");
             
