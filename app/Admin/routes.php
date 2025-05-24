@@ -32,6 +32,7 @@ use App\Admin\Controllers\InviteRewardController;
 use App\Admin\Controllers\TaskIndexController;
 use App\Admin\Controllers\TaskModelController;
 use App\Admin\Controllers\TaskOrderController;
+use App\Admin\Controllers\TextContentsController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Dcat\Admin\Admin;
@@ -86,4 +87,5 @@ Route::group([
     $router->resource("taskindex", TaskIndexController::class);
     $router->resource("taskorder", TaskOrderController::class);
     $router->resource("taskmodel", TaskModelController::class);
+    $router->resource("textcontents", TextContentsController::class);
 });

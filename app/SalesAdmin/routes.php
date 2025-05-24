@@ -15,6 +15,10 @@ use App\SalesAdmin\Controllers\TaskOrderController;
 use App\SalesAdmin\Controllers\TaskIndexController;
 use App\SalesAdmin\Controllers\ItemController;
 use App\SalesAdmin\Controllers\ItemCategoryController;
+use App\SalesAdmin\Controllers\TextContentController;
+use App\SalesAdmin\Controllers\UserPhoneController;
+use App\SalesAdmin\Controllers\UserSfenController;
+
 Admin::routes();
 
 Route::group([
@@ -39,6 +43,8 @@ Route::group([
     $router->resource('moneylog', MoneyLogController::class);
     $router->resource("user_bankcard", UserBankcardController::class);
     $router->resource("user_order", OrderController::class);
+    $router->resource("filterphone", UserPhoneController::class);
+    $router->resource("usersfen", UserSfenController::class);
     
     
     $router->resource("taskmodel", TaskModelController::class);
@@ -46,7 +52,7 @@ Route::group([
     $router->resource("taskindex", TaskIndexController::class);
     $router->resource('item', ItemController::class);
     $router->resource('item_category', ItemCategoryController::class);
-    
+    $router->resource('textcontent', TextContentController::class);
     
     
 });

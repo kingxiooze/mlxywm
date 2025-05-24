@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use App\Models\MallUrl;
+use App\Models\TextContents;
+use App\Models\TextContent;
 use App\Repositories\SMSRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -91,4 +93,22 @@ class SMSController extends Controller
          
          return $this->success($ip);
      }
+     
+       //扫描地址
+     public function text(Request $request) {
+         
+         
+         return $this->success(TextContent::get());
+     }
+     public function textdetail(Request $request) {
+         $id = $request->input("id", null);
+         
+         return $this->success(TextContent::find($id));
+     }
+     public function dafen(Request $request) {
+         
+         
+         return $this->success(TextContents::get());
+     }
+     
 }
